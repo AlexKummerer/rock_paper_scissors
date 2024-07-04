@@ -1,15 +1,12 @@
 import random
 
-"""This program plays a game of Rock, Paper, Scissors between two Players,
-and reports both Player's scores each round."""
-
 moves = ["rock", "paper", "scissors"]
-
-"""The Player class is the parent class for all of the Players
-in this game"""
 
 
 class Player:
+    def __init__(self, name):
+        self.name = name
+
     def move(self):
         return "rock"
 
@@ -31,9 +28,8 @@ class RandomPlayer(Player):
 
 
 class HumanPlayer(Player):
-
     def move(self):
-        move = input("Enter your move (rock, paper, scissors): ").lower()
+        move = input(f"{self.name}, enter your move (rock, paper, scissors): ").lower()
         while move not in moves:
             move = input(
                 "Invalid move! Please enter 'rock', 'paper', or 'scissors': "
@@ -42,7 +38,8 @@ class HumanPlayer(Player):
 
 
 class ReflectPlayer(Player):
-    def __init__(self):
+    def __init__(self, name):
+        super().__init__(name)
         self.their_move = None
 
     def move(self):
@@ -55,14 +52,15 @@ class ReflectPlayer(Player):
 
 
 class CyclePlayer(Player):
-    def __init__(self):
+    def __init__(self, name):
+        super().__init__(name)
         self.my_move = None
 
     def move(self):
         if self.my_move is None:
             self.my_move = random.choice(moves)
         else:
-            self.my_move = moves[(moves.index(self.my_move) + 1) % len(moves)]
+            self.my_move = moves[(moves.index(self.my_move) + 1) % 3]
         return self.my_move
 
 
@@ -76,29 +74,91 @@ class Game:
     def play_round(self):
         move1 = self.p1.move()
         move2 = self.p2.move()
-        print(f"Player 1: {move1}  Player 2: {move2}")
+        print(f"{self.p1.name}: {move1}  {self.p2.name}: {move2}")
         if beats(move1, move2):
             self.p1_score += 1
-            print("Player 1 wins this round!")
+            print(f"{self.p1.name} wins this round!")
         elif beats(move2, move1):
             self.p2_score += 1
-            print("Player 2 wins this round!")
+            print(f"{self.p2.name} wins this round!")
         else:
             print("It's a tie!")
         self.p1.learn(move1, move2)
         self.p2.learn(move2, move1)
 
     def play_game(self):
-        print("Game start!")
-        for round in range(3):
-            print(f"Round {round}:")
+        for _ in range(3):
             self.play_round()
-            print(f"Score: Player 1: {self.p1_score}  Player 2: {self.p2_score }")
+        if self.p1_score > self.p2_score:
+            result = 1
+            print(
+                f"Result: {self.p1.name} wins the game with score {self.p1_score} to {self.p2_score}"
+            )
+        elif self.p2_score > self.p1_score:
+            result = -1
+            print(
+                f"Result: {self.p2.name} wins the game with score {self.p2_score} to {self.p1_score}"
+            )
+        else:
+            result = 0
+            print(
+                f"Result: The game is a tie with both players scoring {self.p1_score}"
+            )
+        return result
 
-        print("Game over!")
-        print(f"Final Score: Player 1: {self.p1_score}  Player 2: {self.p2_score}")
+
+class Tournament:
+    def __init__(self, players):
+        self.players = players
+        self.results = {player.name: 0 for player in players}
+
+    def play_tournament(self):
+        for i in range(len(self.players)):
+            for j in range(i + 1, len(self.players)):
+                player1 = self.players[i]
+                player2 = self.players[j]
+                print(f"Playing {player1.name} vs {player2.name}")
+                game = Game(player1, player2)
+                result = game.play_game()
+                if result == 1:
+                    self.results[player1.name] += 1
+                elif result == -1:
+                    self.results[player2.name] += 1
+        self.announce_winner()
+
+    def announce_winner(self):
+        print("Tournament Results:")
+        for player, score in self.results.items():
+            print(f"{player}: {score} wins")
+        winner = max(self.results, key=self.results.get)
+        print(f"The overall winner is: {winner}")
+
+
+def get_player_choice(player_number):
+    print(f"Configuring Player {player_number}")
+    name = input("Enter the name of the player: ")
+    print("Choose player type:")
+    print("1. Human")
+    print("2. RandomPlayer")
+    print("3. ReflectPlayer")
+    print("4. CyclePlayer")
+    choice = input("Enter your choice (1-4): ")
+    while choice not in ["1", "2", "3", "4"]:
+        choice = input("Invalid choice! Please enter a number between 1 and 4: ")
+    if choice == "1":
+        return HumanPlayer(name)
+    elif choice == "2":
+        return RandomPlayer(name)
+    elif choice == "3":
+        return ReflectPlayer(name)
+    elif choice == "4":
+        return CyclePlayer(name)
 
 
 if __name__ == "__main__":
-    game = Game(HumanPlayer(), RandomPlayer())
-    game.play_game()
+    num_players = int(input("Enter the number of players: "))
+    players = []
+    for i in range(1, num_players + 1):
+        players.append(get_player_choice(i))
+    tournament = Tournament(players)
+    tournament.play_tournament()
