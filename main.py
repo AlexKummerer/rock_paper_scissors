@@ -29,14 +29,41 @@ class RandomPlayer(Player):
     def move(self):
         return random.choice(moves)
 
+
 class HumanPlayer(Player):
-    
+
     def move(self):
         move = input("Enter your move (rock, paper, scissors): ").lower()
         while move not in moves:
-            move = input("Invalid move! Please enter 'rock', 'paper', or 'scissors': ").lower()
+            move = input(
+                "Invalid move! Please enter 'rock', 'paper', or 'scissors': "
+            ).lower()
         return move
 
+
+class ReflectPlayer(Player):
+    def __init__(self):
+        self.their_move = None
+
+    def move(self):
+        if self.their_move is None:
+            return random.choice(moves)
+        return self.their_move
+
+    def learn(self, my_move, their_move):
+        self.their_move = their_move
+
+
+class CyclePlayer(Player):
+    def __init__(self):
+        self.my_move = None
+
+    def move(self):
+        if self.my_move is None:
+            self.my_move = random.choice(moves)
+        else:
+            self.my_move = moves[(moves.index(self.my_move) + 1) % len(moves)]
+        return self.my_move
 
 
 class Game:
@@ -54,7 +81,7 @@ class Game:
             self.p1_score += 1
             print("Player 1 wins this round!")
         elif beats(move2, move1):
-            self.p2_score +=1
+            self.p2_score += 1
             print("Player 2 wins this round!")
         else:
             print("It's a tie!")
@@ -73,5 +100,5 @@ class Game:
 
 
 if __name__ == "__main__":
-    game = Game(HumanPlayer(), RandomPlayer())
+    game = Game(HumanPlayer(), CyclePlayer())
     game.play_game()
