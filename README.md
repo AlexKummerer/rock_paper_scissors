@@ -117,12 +117,12 @@ Alex: 1 wins
 Bot1: 1 wins
 Bot2: 1 wins
 The overall winner is: Alex, Bot1, Bot2
+```
 
-
-#Code Structure
+## Code Structure
 **Player**: Base class for all players.
 **RandomPlayer, HumanPlayer, ReflectPlayer, CyclePlayer**: Classes that define different player behaviors.
 **Game**: Class that handles the logic of a single game between two players.
 **Tournament**: Class that manages the tournament, including creating matchups and determining the winner.
-#License
+## License
 This project is licensed under the MIT License. See the LICENSE file for details.
