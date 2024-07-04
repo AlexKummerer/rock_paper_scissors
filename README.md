@@ -54,7 +54,7 @@ This Python program simulates a Rock, Paper, Scissors tournament. Players can be
     Execute the following command in the terminal:
 
     ```bash
-    python rps_tournament.py
+    python main.py
     ```
 
 2. **Follow the prompts to configure the number of players and their types.**
