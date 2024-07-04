@@ -1,6 +1,6 @@
 import random
 
-# ANSI escape codes for colors
+# ANSI escape codes for colors and cursor control
 COLOR_RESET = "\033[0m"
 COLOR_RED = "\033[31m"
 COLOR_GREEN = "\033[32m"
@@ -9,6 +9,8 @@ COLOR_BLUE = "\033[34m"
 COLOR_MAGENTA = "\033[35m"
 COLOR_CYAN = "\033[36m"
 COLOR_WHITE = "\033[37m"
+CURSOR_UP_ONE = "\033[A"
+ERASE_LINE = "\033[K"
 
 moves = ["rock", "paper", "scissors"]
 
@@ -46,6 +48,9 @@ class HumanPlayer(Player):
             move = input(
                 f"{COLOR_RED}Invalid move! Please enter 'rock', 'paper', or 'scissors': {COLOR_RESET}"
             ).lower()
+        print(
+            f"{CURSOR_UP_ONE}{ERASE_LINE}", end=""
+        )  # Move cursor up and clear the line
         return move
 
 
@@ -149,10 +154,18 @@ class Tournament:
 
     def announce_winner(self):
         print(f"{COLOR_CYAN}Tournament Results:{COLOR_RESET}")
+        max_score = max(self.results.values())
+        winners = [
+            player for player, score in self.results.items() if score == max_score
+        ]
+
         for player, score in self.results.items():
             print(f"{player}: {score} wins")
-        winner = max(self.results, key=self.results.get)
-        print(f"{COLOR_GREEN}The overall winner is: {winner}{COLOR_RESET}")
+
+        if len(winners) == 1:
+            print(f"{COLOR_GREEN}The overall winner is: {winners[0]}{COLOR_RESET}")
+        else:
+            print(f"{COLOR_GREEN}The winners are: {', '.join(winners)}{COLOR_RESET}")
 
 
 def get_player_choice(player_number):
