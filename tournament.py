@@ -1,7 +1,6 @@
-from curses import COLOR_GREEN
 import random
 from typing import List, Tuple
-from costants import COLOR_CYAN, COLOR_RESET, COLOR_YELLOW
+from costants import COLOR_CYAN, COLOR_RESET, COLOR_YELLOW, COLOR_GREEN
 from game import Game
 from players import Player
 
