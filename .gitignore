@@ -5,4 +5,6 @@ venv
 /.venv
 
 /game_data.csv
-game_date.csv
+game_data.csv
+/.game_data.csv
+.game_data.csv
