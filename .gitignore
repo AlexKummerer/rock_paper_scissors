@@ -3,3 +3,6 @@ venv
 .venv
 /venv
 /.venv
+
+/game_data.csv
+game_date.csv
