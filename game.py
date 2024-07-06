@@ -1,4 +1,6 @@
+from typing import Optional
 from costants import COLOR_BLUE, COLOR_MAGENTA, COLOR_RESET, COLOR_YELLOW, COLOR_GREEN
+from logger import DataLogger
 from players import Player
 
 
@@ -31,18 +33,27 @@ class Game:
     - p2_score (int): The score of the second player.
     """
 
-    def __init__(self, p1: Player, p2: Player) -> None:
+    def __init__(
+        self,
+        p1: Player,
+        p2: Player,
+        rounds: int = 3,
+        logger: Optional[DataLogger] = None,
+    ) -> None:
         self.p1 = p1
         self.p2 = p2
         self.p1_score = 0
         self.p2_score = 0
+        self.rounds = rounds
+        self.logger = logger
 
-    def play_round(self) -> None:
-        """Plays a single round of the game."""
+    def play_round(self, round_num: int) -> None:
         move1 = self.p1.move()
         move2 = self.p2.move()
         self.display_moves(move1, move2)
-        self.update_scores(move1, move2)
+        winner = self.update_scores(move1, move2)
+        if self.logger:
+            self.logger.log(round_num, self.p1.name, move1, self.p2.name, move2, winner)
         self.p1.learn(move1, move2)
         self.p2.learn(move2, move1)
 
@@ -65,8 +76,8 @@ class Game:
 
     def play_game(self) -> int:
         """Plays a full game of 3 rounds."""
-        for _ in range(3):
-            self.play_round()
+        for round_num in range(1, self.rounds + 1):
+            self.play_round(round_num)
         return self.get_result()
 
     def get_result(self) -> int:
