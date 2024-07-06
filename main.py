@@ -1,4 +1,4 @@
-from players import CyclePlayer, HumanPlayer, Player, RandomPlayer, ReflectPlayer
+from players import AIPlayer, CyclePlayer, HumanPlayer, Player, RandomPlayer, ReflectPlayer
 from tournament import Tournament
 
 
@@ -15,11 +15,11 @@ def get_player_choice(player_number: int) -> Player:
     print(f"Configuring Player {player_number}")
     name = input("Enter the name of the player: ")
     print(
-        "Choose player type:\n1. Human\n2. RandomPlayer\n3. ReflectPlayer\n4. CyclePlayer"
+         "Choose player type:\n1. Human\n2. RandomPlayer\n3. ReflectPlayer\n4. CyclePlayer\n5. AIPlayer"
     )
-    choice = input("Enter your choice (1-4): ")
-    while choice not in ["1", "2", "3", "4"]:
-        choice = input("Invalid choice! Please enter a number between 1 and 4: ")
+    choice = input("Enter your choice (1-5): ")
+    while choice not in ["1", "2", "3", "4", "5"]:
+        choice = input("Invalid choice! Please enter a number between 1 and 5: ")
     return create_player(choice, name)
 
 
@@ -42,6 +42,8 @@ def create_player(choice: str, name: str) -> Player:
         return ReflectPlayer(name)
     elif choice == "4":
         return CyclePlayer(name)
+    elif choice =="5":
+        return AIPlayer(name)
 
 
 def main() -> None:

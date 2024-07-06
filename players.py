@@ -1,4 +1,6 @@
+import csv
 import random
+from typing import Dict, Optional
 
 from costants import (
     COLOR_CYAN,
@@ -95,3 +97,78 @@ class CyclePlayer(Player):
         else:
             self.my_move = moves[(moves.index(self.my_move) + 1) % 3]
         return self.my_move
+
+
+class AIPlayer(Player):
+    def __init__(self, name: str) -> None:
+        super().__init__(name)
+        self.transition_matrix: Dict[str, Dict[str, Dict[str, int]]] = {
+            "rock": {
+                "rock": {"rock": 0, "paper": 0, "scissors": 0},
+                "paper": {"rock": 0, "paper": 0, "scissors": 0},
+                "scissors": {"rock": 0, "paper": 0, "scissors": 0},
+            },
+            "paper": {
+                "rock": {"rock": 0, "paper": 0, "scissors": 0},
+                "paper": {"rock": 0, "paper": 0, "scissors": 0},
+                "scissors": {"rock": 0, "paper": 0, "scissors": 0},
+            },
+            "scissors": {
+                "rock": {"rock": 0, "paper": 0, "scissors": 0},
+                "paper": {"rock": 0, "paper": 0, "scissors": 0},
+                "scissors": {"rock": 0, "paper": 0, "scissors": 0},
+            },
+        }
+        self.last_move: Optional[str] = None
+        self.second_last_move: Optional[str] = None
+        self.load_data("game_data.csv")
+
+    def move(self) -> str:
+        print(self.transition_matrix)
+        if (
+            self.last_move is None
+            or self.second_last_move is None
+            or not any(
+                self.transition_matrix[self.second_last_move][self.last_move].values()
+            )
+        ):
+            return random.choice(moves)
+
+        predicted_move = max(
+            self.transition_matrix[self.second_last_move][self.last_move],
+            key=self.transition_matrix[self.second_last_move][self.last_move].get,
+        )
+        print(predicted_move)
+        return self.counter_move(predicted_move)
+
+    def learn(self, my_move: str, their_move: str) -> None:
+        if self.second_last_move is not None and self.last_move is not None:
+            self.transition_matrix[self.second_last_move][self.last_move][
+                their_move
+            ] += 1
+        self.second_last_move = self.last_move
+        self.last_move = their_move
+
+    def counter_move(self, predicted_move: str) -> str:
+        if predicted_move == "rock":
+            return "paper"
+        elif predicted_move == "paper":
+            return "scissors"
+        elif predicted_move == "scissors":
+            return "rock"
+
+    def load_data(self, filename: str) -> None:
+        print("Loaded")
+        try:
+            with open(filename, mode="r") as file:
+                reader = csv.DictReader(file)
+                print(reader)
+                for row in reader:
+                    move1, move2 = row["Move1"], row["Move2"]
+                    second_last_move = row.get("SecondLastMove")
+                    if move1 in moves and move2 in moves and second_last_move in moves:
+                        self.transition_matrix[second_last_move][move1][move2] += 1
+        except FileNotFoundError:
+            print(
+                f"No historical data found at {filename}. Starting with an empty transition matrix."
+            )
