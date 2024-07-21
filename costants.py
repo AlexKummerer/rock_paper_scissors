@@ -10,5 +10,4 @@ COLOR_WHITE = "\033[37m"
 CURSOR_UP_ONE = "\033[A"
 ERASE_LINE = "\033[K"
 
-
 MOVES = ["rock", "paper", "scissors"]

@@ -52,8 +52,8 @@ class Game:
         move2 = self.p2.move()
         self.display_moves(move1, move2)
         winner = self.update_scores(move1, move2)
-        if self.logger:
-            self.logger.log(round_num, self.p1.name, move1, self.p2.name, move2, winner)
+        self.log_round(round_num, move1, move2, winner)
+
         self.p1.learn(move1, move2)
         self.p2.learn(move2, move1)
 
@@ -67,12 +67,24 @@ class Game:
         """Updates the scores based on the moves."""
         if beats(move1, move2):
             self.p1_score += 1
+            winner = self.p1.name
             print(f"{COLOR_GREEN}{self.p1.name} wins this round!{COLOR_RESET}")
         elif beats(move2, move1):
             self.p2_score += 1
+            winner = self.p2.name
             print(f"{COLOR_GREEN}{self.p2.name} wins this round!{COLOR_RESET}")
         else:
+            winner = None
             print(f"{COLOR_BLUE}It's a tie!{COLOR_RESET}")
+        return winner
+
+    def log_round(
+        self, round_num: int, move1: str, move2: str, winner: Optional[str]
+    ) -> None:
+        if self.logger:
+            self.logger.log(
+                round_num, self.p1.name, move1, self.p2.name, move2, winner or "Tie"
+            )
 
     def play_game(self) -> int:
         """Plays a full game of 3 rounds."""

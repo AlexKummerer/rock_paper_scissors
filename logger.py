@@ -7,7 +7,6 @@ class DataLogger:
         self.filename = filename
 
         if not os.path.exists(filename):
-
             with open(self.filename, mode="w", newline="") as file:
                 writer = csv.writer(file)
                 writer.writerow(
